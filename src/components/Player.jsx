@@ -1,6 +1,11 @@
 import { useState } from "react";
 
-export default function Player({ initialName, symbol, isActive }) {
+export default function Player({
+  initialName,
+  symbol,
+  isActive,
+  onChangeName,
+}) {
   //two state binding
   const [playerName, setPlayerName] = useState(initialName);
   const [isEditing, setIsEditing] = useState(false);
@@ -12,6 +17,10 @@ export default function Player({ initialName, symbol, isActive }) {
     //best practice below: gets the latest state value, that's why you should use the below function form
     //setIsEditing((editing) => !editing); // => schedule a state update to true
     setIsEditing((editing) => !editing); // => schedule a state update to false
+
+    if (isEditing) {
+      onChangeName(symbol, playerName);
+    }
   }
 
   function handleChange(event) {
