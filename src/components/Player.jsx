@@ -6,17 +6,11 @@ export default function Player({
   isActive,
   onChangeName,
 }) {
-  //two state binding
   const [playerName, setPlayerName] = useState(initialName);
   const [isEditing, setIsEditing] = useState(false);
 
   function handleEditClick() {
-    // setIsEditing(isEditing ? false : true);
-    //setIsEditing(!isEditing); // => schedule a state update to true
-    //setIsEditing(!isEditing); // => schedule a state update to true
-    //best practice below: gets the latest state value, that's why you should use the below function form
-    //setIsEditing((editing) => !editing); // => schedule a state update to true
-    setIsEditing((editing) => !editing); // => schedule a state update to false
+    setIsEditing((editing) => !editing);
 
     if (isEditing) {
       onChangeName(symbol, playerName);
@@ -24,7 +18,6 @@ export default function Player({
   }
 
   function handleChange(event) {
-    //triggered whenever user outputs value into input field
     console.log(event);
     setPlayerName(event.target.value);
   }
@@ -45,7 +38,6 @@ export default function Player({
         {editablePlayerName}
         <span className="player-symbol">{symbol}</span>
       </span>
-      {/* <button onClick={handleEditClick}>{isEditing ? "Save" : "Edit"}</button> */}
       <button onClick={handleEditClick}>{btnCaption}</button>
     </li>
   );
