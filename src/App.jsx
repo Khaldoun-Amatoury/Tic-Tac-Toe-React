@@ -5,7 +5,12 @@ import Log from "./components/Log";
 import GameOver from "./components/GameOver.jsx";
 import { WINNING_COMBINATIONS } from "./winning-combinations";
 
-const initialGameBoard = [
+const PLAYERS = {
+  X: "Player 1",
+  O: "Player 2",
+};
+
+const INITIAL_GAME_BOARD = [
   [null, null, null],
   [null, null, null],
   [null, null, null],
@@ -21,19 +26,9 @@ function deriveActivePlayer(gameTurns) {
   return currentPlayer;
 }
 
-function App() {
-  // we made the state here in app because now we can lift the state up to its children components player.jsx and gameboard.jsx because both need to know which player is the active one for switching symbols and highlighting the active player so we lift the state up from app to its children player and gameboard
-  // const [activePlayer, setActivePlayer] = useState("X"); //this can be removed because already game turns does this where it gives the active player
-  const [players, setPLayers] = useState({
-    X: "Player 1",
-    O: "Player 2",
-  });
-  const [gameTurns, setGameTurns] = useState([]);
-  // const [hasWinner, setHasWinner] = useState(false); //reduntant state because we can derive the info whether we have a winner or not from gameturns and we don't need to check for a winner in handleselectsquare because this app component function will also execute after every turn. After all, we are updating the gameTurns array whenever a square was selected and this app component function will reexecute after every turn.
-
-  const activePlayer = deriveActivePlayer(gameTurns);
+function deriveGameBoard(gameTurns) {
   //here when we click on remqtch the gameboard still gives us filled squares so it doesn't reset the initial gameboard as the initial gameboard array when we change it we change it by reference so we are changing actually the original array so it is not null anymore so we can reset it by making and changing a copy of the initialgameboard array by using spread operator ...
-  let gameBoard = [...initialGameBoard.map((array) => [...array])];
+  let gameBoard = [...INITIAL_GAME_BOARD.map((array) => [...array])];
   //derived state from turns prop
   for (const turn of gameTurns) {
     const { square, player } = turn;
@@ -41,7 +36,10 @@ function App() {
 
     gameBoard[row][col] = player;
   }
+  return gameBoard;
+}
 
+function deriveWinner(gameBoard, players) {
   let winner;
 
   for (const combination of WINNING_COMBINATIONS) {
@@ -61,6 +59,19 @@ function App() {
     }
   }
 
+  return winner;
+}
+
+function App() {
+  // we made the state here in app because now we can lift the state up to its children components player.jsx and gameboard.jsx because both need to know which player is the active one for switching symbols and highlighting the active player so we lift the state up from app to its children player and gameboard
+  // const [activePlayer, setActivePlayer] = useState("X"); //this can be removed because already game turns does this where it gives the active player
+  const [players, setPLayers] = useState(PLAYERS);
+  const [gameTurns, setGameTurns] = useState([]);
+  // const [hasWinner, setHasWinner] = useState(false); //reduntant state because we can derive the info whether we have a winner or not from gameturns and we don't need to check for a winner in handleselectsquare because this app component function will also execute after every turn. After all, we are updating the gameTurns array whenever a square was selected and this app component function will reexecute after every turn.
+
+  const activePlayer = deriveActivePlayer(gameTurns);
+  const gameBoard = deriveGameBoard(gameTurns);
+  const winner = deriveWinner(gameBoard, players);
   const hasDraw = gameTurns.length === 9 && !winner;
 
   function handleSelectSquare(rowIndex, colIndex) {
@@ -101,13 +112,13 @@ function App() {
       <div id="game-container">
         <ol id="players" className="highlight-player">
           <Player
-            initialName="Player 1"
+            initialName={PLAYERS.X}
             symbol="X"
             isActive={activePlayer === "X"}
             onChangeName={handlePlayerNameChange}
           />
           <Player
-            initialName="Player 2"
+            initialName={PLAYERS.O}
             symbol="O"
             isActive={activePlayer === "O"}
             onChangeName={handlePlayerNameChange}
